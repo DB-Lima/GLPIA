@@ -58,7 +58,7 @@ Painel em http://localhost:5173 (o Vite encaminha `/api` para o backend).
 ## Testes
 
 ```bash
-cd backend && uv run pytest --cov=app    # 82 testes, cobertura ~96%
+cd backend && uv run pytest --cov=app    # 82 testes, cobertura ~97%
 cd frontend && npm test && npm run build # testes de filtros + checagem de tipos
 ```
 
