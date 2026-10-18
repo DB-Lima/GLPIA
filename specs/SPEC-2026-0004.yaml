@@ -1,7 +1,6 @@
-# RASCUNHO — revisar estimativas e critérios antes de preencher locked_at
 spec_id: "SPEC-2026-0004"
 spec_version: 1
-locked_at: null
+locked_at: "2026-10-18T11:08:46-03:00"
 
 usuario: "<email-corporativo>"
 email: "<email-corporativo>"
