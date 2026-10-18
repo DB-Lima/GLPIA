@@ -1,0 +1,41 @@
+@startuml 01-arquitetura-consolidada-glpia
+' Arquitetura consolidada (C4 híbrido: contexto + contêineres + componentes críticos)
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_LEFT_RIGHT()
+title GLPIA — Arquitetura consolidada (MVP)
+
+Person(usuario, "Usuário de atendimento", "Coordenador(a), analista ou gestão de TI")
+
+System_Boundary(glpia, "GLPIA") {
+  Container(frontend, "Frontend SPA", "React 18, Vite, TypeScript, Recharts", "Painéis de indicadores, filtros e chat com IA")
+  Container_Boundary(backend, "Backend API (FastAPI, Python 3.12)") {
+    Component(api, "API REST v1", "FastAPI routers", "/api/v1/indicadores/*, /api/v1/chat, /health")
+    Component(agente, "Agente de IA", "LiteLLM, tool calling", "Escolhe ferramentas, valida saída em schema JSON")
+    Component(ferramentas, "Ferramentas", "Funções somente leitura", "consultar_sla, consultar_backlog, ...")
+    Component(indicadores, "Serviço de indicadores", "Python puro", "Fórmulas IND-01 a IND-07")
+    Component(port, "GlpiPort", "Protocol", "Entrega chamados normalizados")
+    Component(mock, "Adapter mock", "JSON com seed fixa", "Dados fictícios no formato GLPI")
+    Component(rest, "Adapter REST (fase 2)", "httpx async", "Sessão App-Token + User-Token, paginação")
+    Component(redacao, "Filtro de redação", "Python", "Remove e-mail/CPF antes de chamadas externas")
+  }
+}
+
+System_Ext(llm, "API de LLM", "Claude via LiteLLM (fallback configurável)")
+System_Ext(glpi, "GLPI", "Service desk — API REST")
+
+Rel(usuario, frontend, "Usa", "HTTPS")
+Rel(frontend, api, "Consulta indicadores e envia perguntas", "JSON/HTTPS")
+Rel(api, indicadores, "Calcula indicadores")
+Rel(api, agente, "Encaminha pergunta")
+Rel(agente, redacao, "Sanitiza texto do usuário")
+Rel(agente, llm, "Prompt + resultados agregados", "HTTPS")
+Rel(agente, ferramentas, "Executa ferramenta pedida pelo LLM")
+Rel(ferramentas, indicadores, "Chama")
+Rel(indicadores, port, "Lê chamados normalizados")
+Rel(port, mock, "MVP")
+Rel(port, rest, "Fase 2")
+Rel(rest, glpi, "Somente leitura", "REST/HTTPS")
+
+SHOW_LEGEND()
+@enduml

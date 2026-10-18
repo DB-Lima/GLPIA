@@ -1,0 +1,40 @@
+# RASCUNHO — revisar estimativas e critérios antes de preencher locked_at
+spec_id: "SPEC-2026-0002"
+spec_version: 1
+locked_at: null
+
+usuario: "<email-corporativo>"
+email: "<email-corporativo>"
+sigla_area: "S+TI"
+modo: "DEV"
+ferramenta: "claude_code"
+
+tipo_tarefa: "codigo"
+descricao_tarefa: >
+  Criar o backend FastAPI (Python 3.12) com modelo normalizado de chamado,
+  interface GlpiPort e adapter mock que carrega um dataset fictício gerado
+  por script com seed fixa, expondo GET /health e GET /api/v1/chamados/amostra.
+
+estimativa_jr_min: 480     # proposta — confirmar
+estimativa_pleno_min: 240
+estimativa_sr_min: 150
+
+contexto_tecnico: >
+  Monorepo (ADR-0005), pasta backend/. FastAPI + Pydantic v2 + Uvicorn,
+  gerenciador uv ou Poetry, pytest. Modelo normalizado e campos GLPI em
+  agent_docs/glpi-dominio.md. Seleção de adapter por GLPI_ADAPTER=mock|rest
+  (ADR-0002). Fuso America/Sao_Paulo.
+
+criterios_aceite:
+  - "uvicorn sobe sem erro e GET /health retorna 200 com {status: ok}"
+  - "Script backend/scripts/gerar_mock.py gera ~5.000 chamados com seed fixa; duas execuções produzem arquivos idênticos"
+  - "Dataset inclui casos de borda: SLA nulo, sem grupo, pendente, excluído, solucionado após o prazo"
+  - "Dataset não contém nomes ou e-mails reais (somente valores gerados)"
+  - "GlpiPort é um Protocol e o serviço depende só dele (nenhum import do adapter no domínio)"
+  - "pytest passa com testes do adapter mock e do filtro por período"
+
+complexidade: "media"
+restricoes:
+  - "Sem dependência GPL"
+  - "Nenhuma credencial em código; configuração via variáveis de ambiente e .env.example"
+observacao: null

@@ -1,0 +1,39 @@
+@startuml 02-fluxo-critico-pergunta-ia
+title GLPIA — Fluxo crítico: pergunta em linguagem natural
+
+actor Usuario as U
+participant "Frontend SPA" as FE
+participant "API /api/v1/chat" as API
+participant "Agente de IA" as AG
+participant "Filtro de redação" as RD
+participant "API de LLM\n(via LiteLLM)" as LLM
+participant "Ferramentas" as TL
+participant "Serviço de indicadores" as IS
+participant "GlpiPort\n(mock | rest)" as GP
+
+U -> FE : "Qual o SLA de solução do N2 em setembro?"
+FE -> API : POST pergunta + histórico curto + filtros ativos
+API -> AG : processar(pergunta, contexto)
+AG -> RD : sanitizar(pergunta)
+RD --> AG : texto sem e-mail/CPF
+AG -> LLM : system prompt (YAML versionado) + ferramentas + pergunta
+LLM --> AG : tool_call consultar_sla(tipo=ttr, grupo=N2, periodo=set/2026)
+AG -> AG : validar argumentos (Pydantic)
+AG -> TL : consultar_sla(...)
+TL -> IS : sla_ttr(filtro)
+IS -> GP : listar_chamados(filtro)
+GP --> IS : chamados normalizados
+IS --> TL : {percentual: 87.4, cumpridos: 153, elegiveis: 175}
+TL --> AG : resultado agregado (sem PII)
+AG -> LLM : resultado da ferramenta
+LLM --> AG : resposta no schema JSON
+AG -> AG : validar schema (1 nova tentativa se inválido)
+AG --> API : resposta + visualização + filtros sugeridos + rastreio
+API --> FE : 200 JSON (com trace_id)
+FE --> U : texto + gráfico + botão "aplicar filtros"
+
+alt LLM indisponível ou timeout > 30 s
+  AG -> LLM : repetir com modelo de fallback
+  AG --> API : 503 com mensagem amigável se o fallback também falhar
+end
+@enduml

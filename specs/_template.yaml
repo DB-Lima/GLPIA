@@ -1,0 +1,31 @@
+# ============================================================
+# SPEC-KIT — GLPIA (template)
+# Copie para SPEC-YYYY-NNNN.yaml. Preencha tudo ANTES de executar.
+# locked_at = momento exato em que a tarefa é entregue ao agente.
+# ============================================================
+spec_id: "SPEC-YYYY-NNNN"
+spec_version: 1
+locked_at: null
+
+usuario: "<email-corporativo>"     # não versionar e-mail real (repo público)
+email: "<email-corporativo>"
+sigla_area: "S+TI"
+modo: "DEV"                        # DEV | NEGOCIO
+ferramenta: "claude_code"
+
+tipo_tarefa: "codigo"              # codigo | analise | documento | relatorio | email | pesquisa | reuniao | apresentacao | outro
+descricao_tarefa: >
+  [verbo] [artefato] [stack/contexto] [resultado esperado]
+
+estimativa_jr_min: null            # sem IA
+estimativa_pleno_min: null
+estimativa_sr_min: null
+
+contexto_tecnico: >
+
+criterios_aceite:                  # 3 a 8, binários e verificáveis
+  - ""
+
+complexidade: "media"              # baixa | media | alta | muito_alta
+restricoes: []
+observacao: null

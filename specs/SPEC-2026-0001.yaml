@@ -1,0 +1,54 @@
+# ============================================================
+# SPEC-KIT — GLPIA
+# ============================================================
+
+# --- IDENTIFICAÇÃO ---
+spec_id: "SPEC-2026-0001"
+spec_version: 1
+locked_at: "2026-10-18T10:41:26-03:00"
+
+# --- DEV E ÁREA ---
+usuario: "<email-corporativo>"        # repo público: não versionar e-mail real (LGPD)
+email: "<email-corporativo>"
+sigla_area: "S+TI"
+modo: "DEV"
+ferramenta: "claude_code"
+
+# --- TAREFA ---
+tipo_tarefa: "documento"
+descricao_tarefa: >
+  Escrever a documentação inicial do GLPIA (visão, indicadores, arquitetura C4,
+  ADRs, roadmap, governança, specs do MVP e CLAUDE.md) em Markdown/PlantUML no
+  repositório, pronta para guiar a implementação com agentes de IA.
+
+# --- ESTIMATIVAS (propostas pelo agente; dev deve confirmar) ---
+estimativa_jr_min: 1200
+estimativa_pleno_min: 720
+estimativa_sr_min: 480
+
+# --- CONTEXTO TÉCNICO ---
+contexto_tecnico: >
+  Repositório novo (branch main, GitHub). Stack decidida: React 18 + Vite,
+  FastAPI (Python 3.12), LiteLLM com Claude como modelo padrão, GLPI via
+  adapter com mock primeiro e API REST depois. Padrões Positivo: SDD,
+  C4-PlantUML, CLAUDE.md curto, estrutura .claude/ versionada.
+
+# --- CRITÉRIOS DE ACEITE ---
+criterios_aceite:
+  - "docs/ contém visão, indicadores, arquitetura, roadmap e governança em Markdown"
+  - "Cada indicador do MVP tem fórmula, campos GLPI de origem e filtros definidos"
+  - "Existem ao menos 4 ADRs com contexto, decisão e consequências"
+  - "docs/diagramas/ contém 2 arquivos .puml nomeados no padrão [nn]-[tipo]-[descricao]"
+  - "specs/ contém uma spec por entrega do MVP, todas com 3 a 8 critérios de aceite"
+  - "CLAUDE.md tem menos de 60 linhas e aponta para docs/ e agent_docs/"
+  - "Nenhum arquivo versionado contém credencial, token, e-mail real ou hostname interno"
+
+complexidade: "alta"
+
+restricoes:
+  - "Repositório público: sem dados reais de chamados, PII ou endereços internos"
+  - "Somente ferramentas de diagrama aprovadas (C4-PlantUML; Mermaid só como visualização auxiliar)"
+
+observacao: >
+  Estimativas foram sugeridas pelo agente na criação da spec; revisar no
+  registro de KPI se não refletirem a percepção do dev.

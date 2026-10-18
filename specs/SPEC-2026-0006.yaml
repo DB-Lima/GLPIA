@@ -1,0 +1,39 @@
+# RASCUNHO (fase 2) — revisar estimativas e critérios antes de preencher locked_at
+spec_id: "SPEC-2026-0006"
+spec_version: 1
+locked_at: null
+
+usuario: "<email-corporativo>"
+email: "<email-corporativo>"
+sigla_area: "S+TI"
+modo: "DEV"
+ferramenta: "claude_code"
+
+tipo_tarefa: "codigo"
+descricao_tarefa: >
+  Implementar o adapter REST do GLPI (httpx async) que abre sessão com
+  App-Token e User-Token, pagina chamados e grupos atribuídos, converte para
+  o modelo normalizado e é selecionado por GLPI_ADAPTER=rest.
+
+estimativa_jr_min: 600     # proposta — confirmar
+estimativa_pleno_min: 300
+estimativa_sr_min: 180
+
+contexto_tecnico: >
+  Depende da SPEC-2026-0002. Versão do GLPI alvo a confirmar (apirest.php no
+  9.5/10; API v2 no 11). Usuário com perfil somente leitura. Mapeamento de
+  campos em agent_docs/glpi-dominio.md; IDs de search options confirmados via
+  listSearchOptions/Ticket na instância real.
+
+criterios_aceite:
+  - "Com GLPI_ADAPTER=rest e credenciais válidas, todos os endpoints de indicadores respondem sem alteração no frontend"
+  - "Sessão é encerrada (killSession) ao desligar a aplicação"
+  - "Paginação busca todos os chamados do período (teste com resposta simulada de 3 páginas)"
+  - "Erro de autenticação do GLPI retorna 502 com mensagem clara e sem expor tokens em log"
+  - "Testes de contrato com respostas simuladas do GLPI cobrem o mapeamento de todos os campos usados"
+
+complexidade: "alta"
+restricoes:
+  - "Somente requisições GET de leitura além de initSession/killSession"
+  - "Tokens apenas em variáveis de ambiente"
+observacao: null

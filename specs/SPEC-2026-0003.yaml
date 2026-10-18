@@ -1,0 +1,39 @@
+# RASCUNHO — revisar estimativas e critérios antes de preencher locked_at
+spec_id: "SPEC-2026-0003"
+spec_version: 1
+locked_at: null
+
+usuario: "<email-corporativo>"
+email: "<email-corporativo>"
+sigla_area: "S+TI"
+modo: "DEV"
+ferramenta: "claude_code"
+
+tipo_tarefa: "codigo"
+descricao_tarefa: >
+  Implementar o serviço de indicadores IND-01 a IND-07 conforme
+  docs/01-indicadores.md e expor cada um em GET /api/v1/indicadores/{nome}
+  com os filtros comuns, retornando o filtro aplicado junto do resultado.
+
+estimativa_jr_min: 720     # proposta — confirmar
+estimativa_pleno_min: 360
+estimativa_sr_min: 240
+
+contexto_tecnico: >
+  Depende da SPEC-2026-0002. Serviço em backend/app/domain/, Python puro e
+  sem I/O (recebe lista de chamados normalizados). Routers em
+  backend/app/api/v1/. Cache em memória por filtro (TTL 5 min).
+
+criterios_aceite:
+  - "Cada indicador IND-01 a IND-07 tem endpoint documentado no Swagger em /docs"
+  - "Testes com dataset pequeno escrito à mão conferem o valor exato de cada fórmula"
+  - "Chamados com is_deleted = 1 não entram em nenhum indicador (teste dedicado)"
+  - "SLA TTO/TTR ignoram chamados sem prazo definido no denominador (teste dedicado)"
+  - "Cobertura de testes do serviço de indicadores >= 85%"
+  - "p95 < 500 ms por endpoint com o dataset mock completo (medido em teste local)"
+  - "Toda resposta inclui o campo filtro_aplicado"
+
+complexidade: "alta"
+restricoes:
+  - "Fórmulas só podem divergir de docs/01-indicadores.md se o documento for atualizado no mesmo commit"
+observacao: null

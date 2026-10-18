@@ -1,0 +1,38 @@
+# RASCUNHO — revisar estimativas e critérios antes de preencher locked_at
+spec_id: "SPEC-2026-0004"
+spec_version: 1
+locked_at: null
+
+usuario: "<email-corporativo>"
+email: "<email-corporativo>"
+sigla_area: "S+TI"
+modo: "DEV"
+ferramenta: "claude_code"
+
+tipo_tarefa: "codigo"
+descricao_tarefa: >
+  Criar o frontend React 18 + Vite + TypeScript com painel de indicadores
+  (cards, gráficos Recharts, tabela de SLA em risco) e barra de filtros
+  sincronizada com a URL, consumindo a API /api/v1/indicadores.
+
+estimativa_jr_min: 900     # proposta — confirmar
+estimativa_pleno_min: 480
+estimativa_sr_min: 300
+
+contexto_tecnico: >
+  Depende da SPEC-2026-0003. Pasta frontend/. Proxy do Vite para o backend em
+  dev. Estado de filtros na query string para permitir que a IA aplique
+  filtros depois (SPEC-2026-0005). Layout responsivo a partir de 1280 px.
+
+criterios_aceite:
+  - "npm run dev abre o painel e npm run build termina sem erro de TypeScript"
+  - "Painel exibe IND-01 a IND-07 com os mesmos números retornados pela API para o mesmo filtro"
+  - "Alterar um filtro atualiza a URL; recarregar a página restaura o mesmo estado"
+  - "Tabela de SLA em risco ordena por prazo e destaca vencidos"
+  - "Estados de carregamento e erro visíveis em todos os componentes que chamam a API"
+  - "Nenhuma chave de API ou token presente no bundle do frontend"
+
+complexidade: "alta"
+restricoes:
+  - "Sem bibliotecas de UI pesadas no MVP (MUI/Antd); CSS próprio ou CSS Modules"
+observacao: null

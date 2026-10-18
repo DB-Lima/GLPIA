@@ -1,0 +1,44 @@
+# RASCUNHO — revisar estimativas e critérios antes de preencher locked_at
+spec_id: "SPEC-2026-0005"
+spec_version: 1
+locked_at: null
+
+usuario: "<email-corporativo>"
+email: "<email-corporativo>"
+sigla_area: "S+TI"
+modo: "DEV"
+ferramenta: "claude_code"
+
+tipo_tarefa: "codigo"
+descricao_tarefa: >
+  Implementar POST /api/v1/chat com agente LiteLLM (Claude padrão) usando
+  tool calling somente leitura sobre o serviço de indicadores, resposta em
+  schema JSON com visualização e filtros sugeridos, e o painel de chat no
+  frontend que renderiza o gráfico e aplica os filtros.
+
+estimativa_jr_min: 1200    # proposta — confirmar
+estimativa_pleno_min: 600
+estimativa_sr_min: 360
+
+contexto_tecnico: >
+  Depende das SPECs 0003 e 0004. Código em backend/app/ai/. Ferramentas e
+  schema de resposta em docs/02-arquitetura.md. Regras de privacidade em
+  ADR-0003 e ADR-0004. Variáveis: LLM_MODEL, LLM_FALLBACK_MODEL, chave do
+  provedor via variável de ambiente. Prompt em backend/app/ai/prompts/system_v1.yaml.
+
+criterios_aceite:
+  - "Pergunta sobre SLA TTR de um grupo retorna o mesmo percentual que GET /api/v1/indicadores/sla_ttr com o filtro equivalente"
+  - "Toda resposta numérica tem pelo menos uma entrada em rastreio com ferramenta e argumentos"
+  - "Teste automatizado comprova que o payload enviado ao LLM não contém título, descrição, nome ou e-mail de chamados"
+  - "E-mail ou CPF digitado na pergunta é removido antes da chamada externa e a redação é registrada em log"
+  - "Pergunta fora do catálogo de ferramentas recebe resposta de que o dado não está disponível, sem número inventado"
+  - "Timeout ou erro 5xx do modelo principal aciona o modelo de fallback; falha dos dois retorna 503 amigável"
+  - "Log estruturado por pergunta registra trace_id, modelo, tokens de entrada e de saída"
+  - "No frontend, o botão Aplicar filtros atualiza o painel com filtros_sugeridos"
+
+complexidade: "muito_alta"
+restricoes:
+  - "Nenhuma ferramenta com efeito colateral (somente leitura)"
+  - "Sem text-to-SQL"
+  - "Testes não dependem da API real de LLM (usar resposta simulada); 1 teste manual documentado com a API real"
+observacao: null
