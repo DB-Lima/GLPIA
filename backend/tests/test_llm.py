@@ -4,7 +4,7 @@ import litellm
 import pytest
 
 from app.ai import llm as modulo
-from app.ai.llm import ClienteLiteLLM, ErroConfiguracao, ErroTransitorio
+from app.ai.llm import ClienteLiteLLM, ErroConfiguracao, ErroRequisicao, ErroTransitorio
 
 
 def _resposta_litellm():
@@ -47,3 +47,22 @@ async def test_mapeia_erros_do_litellm(monkeypatch, erro, esperado):
     monkeypatch.setattr(modulo.litellm, "acompletion", falso)
     with pytest.raises(esperado):
         await ClienteLiteLLM(30).completar("m", [], [])
+
+
+@pytest.mark.parametrize(
+    "erro, esperado, motivo",
+    [
+        (litellm.BadRequestError(message="Your credit balance is too low", model="m", llm_provider="anthropic"), ErroConfiguracao, "creditos"),
+        (litellm.BadRequestError(message="tools.0: invalid schema", model="m", llm_provider="anthropic"), ErroRequisicao, None),
+        (litellm.RateLimitError(message="429", model="m", llm_provider="anthropic"), ErroTransitorio, None),
+    ],
+)
+async def test_mapeia_400_e_429(monkeypatch, erro, esperado, motivo):
+    async def falso(**_):
+        raise erro
+
+    monkeypatch.setattr(modulo.litellm, "acompletion", falso)
+    with pytest.raises(esperado) as capturado:
+        await ClienteLiteLLM(30).completar("m", [], [])
+    if motivo:
+        assert capturado.value.motivo == motivo

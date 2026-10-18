@@ -21,7 +21,7 @@ from app.ai.ferramentas import (
     montar_visualizacao,
     para_llm,
 )
-from app.ai.llm import ClienteLLM, ErroConfiguracao, ErroTransitorio
+from app.ai.llm import ClienteLLM, ErroConfiguracao, ErroRequisicao, ErroTransitorio
 from app.ai.redacao import redigir
 from app.logs import obter_logger
 from app.services.consultas import ServicoIndicadores
@@ -189,8 +189,9 @@ class Agente:
                 mensagens.extend(respostas_ferramentas)
             else:
                 raise SaidaInvalidaError("limite de passos atingido")
-        except ErroConfiguracao:
-            self._registrar(trace_id, inicio, modelo_usado, tokens_entrada, tokens_saida, rastreio, "erro_configuracao")
+        except (ErroConfiguracao, ErroRequisicao) as erro:
+            self._registrar(trace_id, inicio, modelo_usado, tokens_entrada, tokens_saida, rastreio, type(erro).__name__)
+            logger.warning("llm_recusou", extra={"dados": {"trace_id": trace_id, "erro": str(erro)[:300]}})
             raise
         except (IndisponivelError, SaidaInvalidaError) as erro:
             self._registrar(trace_id, inicio, modelo_usado, tokens_entrada, tokens_saida, rastreio, type(erro).__name__)

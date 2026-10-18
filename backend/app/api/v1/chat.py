@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 from app.ai.agente import Agente, IndisponivelError, MensagemHistorico, RespostaChat, SaidaInvalidaError
 from app.ai.ferramentas import ArgsFiltro
-from app.ai.llm import ErroConfiguracao
+from app.ai.llm import ErroConfiguracao, ErroRequisicao
 
 router = APIRouter(tags=["chat"])
 
@@ -20,9 +20,15 @@ async def chat(request: Request, corpo: PerguntaChat) -> RespostaChat:
     try:
         return await agente.responder(corpo.pergunta, corpo.historico, corpo.filtros_ativos)
     except ErroConfiguracao as erro:
+        detalhe = (
+            "A conta da API de IA está sem créditos. Adicione créditos no console do provedor e tente novamente."
+            if erro.motivo == "creditos"
+            else "O assistente de IA não está configurado. Verifique a chave da API e o modelo no arquivo .env."
+        )
+        raise HTTPException(status_code=503, detail=detalhe) from erro
+    except ErroRequisicao as erro:
         raise HTTPException(
-            status_code=503,
-            detail="O assistente de IA não está configurado. Verifique a chave da API e o modelo no arquivo .env.",
+            status_code=502, detail="A API de IA recusou a requisição. Detalhes no log do backend (trace no evento chat)."
         ) from erro
     except IndisponivelError as erro:
         raise HTTPException(

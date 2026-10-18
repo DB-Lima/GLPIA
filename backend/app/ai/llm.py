@@ -13,16 +13,25 @@ ERROS_TRANSITORIOS = (
     litellm.InternalServerError,
     litellm.ServiceUnavailableError,
     litellm.BadGatewayError,
+    litellm.RateLimitError,
 )
 ERROS_CONFIGURACAO = (litellm.AuthenticationError, litellm.PermissionDeniedError, litellm.NotFoundError)
 
 
 class ErroTransitorio(Exception):
-    """Timeout, falha de conexão ou 5xx: vale tentar o modelo de fallback."""
+    """Timeout, falha de conexão, limite de taxa ou 5xx: vale tentar o modelo de fallback."""
 
 
 class ErroConfiguracao(Exception):
-    """Chave ausente/inválida ou modelo inexistente: o fallback não resolve."""
+    """Chave ausente/inválida, conta sem créditos ou modelo inexistente: o fallback não resolve."""
+
+    def __init__(self, mensagem: str, motivo: str = "chave"):
+        super().__init__(mensagem)
+        self.motivo = motivo
+
+
+class ErroRequisicao(Exception):
+    """O provedor recusou a requisição (400 ou outro erro não classificado)."""
 
 
 @dataclass
@@ -55,6 +64,12 @@ class ClienteLiteLLM:
             raise ErroConfiguracao(str(erro)) from erro
         except ERROS_TRANSITORIOS as erro:
             raise ErroTransitorio(str(erro)) from erro
+        except litellm.BadRequestError as erro:
+            if "credit balance" in str(erro).lower():
+                raise ErroConfiguracao(str(erro), motivo="creditos") from erro
+            raise ErroRequisicao(str(erro)) from erro
+        except litellm.APIError as erro:
+            raise ErroRequisicao(str(erro)) from erro
 
         mensagem = resposta.choices[0].message
         dados: dict = {"role": "assistant", "content": mensagem.content}

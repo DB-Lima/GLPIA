@@ -232,3 +232,16 @@ def test_ferramentas_expostas_sao_somente_leitura():
     assert nomes == set(FERRAMENTAS) | {"responder_usuario"}
     assert all(n.startswith(("consultar_", "listar_")) for n in FERRAMENTAS)
     assert all("$ref" not in json.dumps(d) for d in definicoes_ferramentas())
+
+
+def test_conta_sem_creditos_retorna_mensagem_clara(client, com_llm):
+    com_llm([], falhas={"principal": ErroConfiguracao("credit balance is too low", motivo="creditos")})
+    resposta = _perguntar(client, "SLA?")
+    assert resposta.status_code == 503 and "sem créditos" in resposta.json()["detail"]
+
+
+def test_requisicao_recusada_retorna_502(client, com_llm):
+    from app.ai.llm import ErroRequisicao
+
+    com_llm([], falhas={"principal": ErroRequisicao("400 invalid schema")})
+    assert _perguntar(client, "SLA?").status_code == 502
