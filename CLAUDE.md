@@ -14,8 +14,12 @@ Dashboard de indicadores de SLA e atendimento do GLPI com assistente de IA
 - Branch principal: `main`. Commits referenciam a spec (`Ref: SPEC-2026-NNNN`)
 - Decisões de arquitetura novas viram ADR em `docs/adr/`
 
-## Comandos
-- (preencher quando SPEC-2026-0002 e 0004 forem concluídas: rodar back, front e testes)
+## Comandos (backend, rodar dentro de `backend/`; uv via `python -m uv`)
+- `python -m uv sync` — cria `.venv` e instala dependências
+- `python -m uv run uvicorn app.main:app --reload` — API em http://localhost:8000 (Swagger em `/docs`)
+- `python -m uv run pytest --cov=app` — testes
+- `python -m uv run python scripts/gerar_mock.py` — regenera o dataset fictício (seed fixa; commitar o resultado)
+- Frontend: preencher quando a SPEC-2026-0004 for concluída
 
 ## Regras não negociáveis
 - Fórmulas de indicadores seguem `docs/01-indicadores.md`; mudou a fórmula, mudou o doc no mesmo commit
