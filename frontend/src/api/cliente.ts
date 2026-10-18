@@ -5,6 +5,8 @@ import type {
   Distribuicao,
   Filtros,
   Granularidade,
+  MensagemHistorico,
+  RespostaChat,
   RespostaIndicador,
   Sla,
   SlaEmRisco,
@@ -15,8 +17,8 @@ import type {
 
 export class ErroApi extends Error {}
 
-export async function obterJson<T>(caminho: string, sinal?: AbortSignal): Promise<T> {
-  const resposta = await fetch(caminho, { signal: sinal });
+export async function obterJson<T>(caminho: string, sinal?: AbortSignal, init?: RequestInit): Promise<T> {
+  const resposta = await fetch(caminho, { ...init, signal: sinal });
   if (!resposta.ok) {
     let detalhe = `${resposta.status} ${resposta.statusText}`;
     try {
@@ -48,3 +50,16 @@ export const api = {
   distribuicao: (f: Filtros, dimensao: Dimensao) => indicador<Distribuicao>("distribuicao", f, { dimensao, top_n: 10 }),
   valoresFiltro: () => (sinal?: AbortSignal) => obterJson<ValoresFiltro>("/api/v1/filtros/valores", sinal),
 };
+
+export function perguntar(
+  pergunta: string,
+  historico: MensagemHistorico[],
+  filtrosAtivos: Filtros,
+  sinal?: AbortSignal,
+): Promise<RespostaChat> {
+  return obterJson<RespostaChat>("/api/v1/chat", sinal, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pergunta, historico, filtros_ativos: filtrosAtivos }),
+  });
+}

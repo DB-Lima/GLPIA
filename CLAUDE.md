@@ -19,7 +19,7 @@ Dashboard de indicadores de SLA e atendimento do GLPI com assistente de IA
 - `python -m uv run uvicorn app.main:app --reload` — API em http://localhost:8000 (Swagger em `/docs`)
 - `python -m uv run pytest --cov=app` — testes
 - `python -m uv run python scripts/gerar_mock.py` — regenera o dataset fictício (seed fixa; commitar o resultado)
-- Frontend: preencher quando a SPEC-2026-0004 for concluída
+- Frontend (dentro de `frontend/`): `npm install`, `npm run dev` (http://localhost:5173, proxy `/api` → :8000), `npm test`, `npm run build`
 
 ## Regras não negociáveis
 - Fórmulas de indicadores seguem `docs/01-indicadores.md`; mudou a fórmula, mudou o doc no mesmo commit

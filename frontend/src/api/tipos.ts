@@ -112,3 +112,36 @@ export interface ValoresFiltro {
   prioridades: Record<string, string>;
   tipos: TipoChamado[];
 }
+
+// ---------- chat (backend/app/ai) ----------
+
+export interface Visualizacao {
+  tipo: "linha" | "barra" | "kpi" | "tabela";
+  titulo: string;
+  unidade: string;
+  categorias: string[];
+  series: { nome: string; valores: (number | null)[] }[];
+  kpis: { rotulo: string; valor: number | null; unidade: string }[];
+  colunas: string[];
+  linhas: (string | number | null)[][];
+}
+
+export interface ItemRastreio {
+  chamada: number;
+  ferramenta: string;
+  argumentos: Record<string, unknown>;
+}
+
+export interface RespostaChat {
+  resposta: string;
+  visualizacao: Visualizacao | null;
+  filtros_sugeridos: Filtros | null;
+  rastreio: ItemRastreio[];
+  trace_id: string;
+  modelo: string;
+}
+
+export interface MensagemHistorico {
+  papel: "usuario" | "assistente";
+  texto: string;
+}

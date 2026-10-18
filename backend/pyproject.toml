@@ -9,6 +9,10 @@ dependencies = [
     "pydantic>=2.8",
     "pydantic-settings>=2.4",
     "tzdata>=2024.1",
+    "litellm>=1.106.0",
+    "python-dotenv>=1.2.4",
+    "pyyaml>=6.0.3",
+    "mcp>=2.3.0",
 ]
 
 [dependency-groups]

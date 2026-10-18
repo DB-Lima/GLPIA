@@ -2,13 +2,14 @@ import { useState } from "react";
 import { api } from "./api/cliente";
 import type { Dimensao, Granularidade } from "./api/tipos";
 import { BarraFiltros } from "./components/BarraFiltros";
+import { Chat } from "./components/Chat";
 import { GraficoBacklog, GraficoDistribuicao, GraficoSlaPorDimensao, GraficoVolume } from "./components/Graficos";
 import { Kpis } from "./components/Kpis";
 import { Painel } from "./components/Painel";
 import { TabelaRisco } from "./components/TabelaRisco";
 import { useApi } from "./hooks/useApi";
 import { useFiltros } from "./hooks/useFiltros";
-import { filtrosParaQuery } from "./lib/filtros";
+import { filtrosDaUrl, filtrosParaQuery } from "./lib/filtros";
 import { fmtData, fmtDataHora } from "./lib/formato";
 
 const DIMENSOES: [Dimensao, string][] = [
@@ -59,6 +60,7 @@ export default function App() {
         onLimpar={() => aplicar({})}
       />
 
+      <div className="layout">
       <main className="conteudo">
         <Kpis volume={volume} backlog={backlog} slaTto={slaTto} slaTtr={slaTtr} risco={risco} tempos={tempos} />
 
@@ -128,6 +130,9 @@ export default function App() {
           {(r) => <TabelaRisco risco={r.resultado} />}
         </Painel>
       </main>
+
+      <Chat filtros={filtros} onAplicarFiltros={(f) => aplicar(filtrosDaUrl(filtrosParaQuery(f)))} />
+      </div>
     </div>
   );
 }

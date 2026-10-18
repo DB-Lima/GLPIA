@@ -38,17 +38,18 @@ Ver [diagramas/02-fluxo-critico-pergunta-ia.puml](diagramas/02-fluxo-critico-per
 
 1. Front envia `POST /api/v1/chat` com a pergunta, o histórico curto e os filtros ativos do painel.
 2. Agente chama o LLM com o *system prompt* versionado e a lista de ferramentas.
-3. O LLM pede uma ou mais ferramentas (ex.: `consultar_sla(tipo="ttr", grupo_tecnico="N2", periodo=...)`).
+3. O LLM pede uma ou mais ferramentas (ex.: `consultar_sla(tipo_sla="ttr", grupo_tecnico="N2 - Suporte Técnico", periodo_inicio=..., periodo_fim=...)`).
 4. O backend executa a ferramenta no serviço de indicadores e devolve ao LLM **somente o resultado agregado**.
-5. O LLM redige a resposta. O backend valida a saída contra o schema e devolve:
+5. O LLM entrega a resposta chamando a ferramenta `responder_usuario` (texto, número da chamada a ilustrar e filtros sugeridos). O backend valida os argumentos e **monta o gráfico a partir do resultado real da ferramenta** — o modelo nunca escreve os números do gráfico. Resposta da API:
 
 ```json
 {
   "resposta": "Em setembro o N2 cumpriu 87,4% do SLA de solução (153 de 175 chamados).",
-  "visualizacao": { "tipo": "barra", "titulo": "SLA TTR por grupo — set/2026", "series": [] },
+  "visualizacao": { "tipo": "kpi", "titulo": "SLA de solução do N2 — set/2026", "kpis": [{ "rotulo": "Cumprido", "valor": 87.4, "unidade": "%" }] },
   "filtros_sugeridos": { "grupo_tecnico": "N2", "periodo_inicio": "2026-09-01", "periodo_fim": "2026-09-30" },
-  "rastreio": [{ "ferramenta": "consultar_sla", "argumentos": {} }],
-  "trace_id": "..."
+  "rastreio": [{ "chamada": 1, "ferramenta": "consultar_sla", "argumentos": {} }],
+  "trace_id": "...",
+  "modelo": "anthropic/claude-opus-5-5"
 }
 ```
 
@@ -68,6 +69,15 @@ Ver [diagramas/02-fluxo-critico-pergunta-ia.puml](diagramas/02-fluxo-critico-per
 
 Todas são **somente leitura** e têm parâmetros validados por Pydantic. O LLM
 não gera SQL nem consultas livres ([ADR-0003](adr/ADR-0003-ia-tool-calling-somente-leitura.md)).
+
+**Detalhes de implementação (SPEC-2026-0005):**
+- `tool_choice` é sempre `auto`: os modelos Claude atuais recusam escolha forçada de ferramenta, por isso a
+  resposta final vem da ferramenta `responder_usuario` em vez de `response_format`.
+- Saída inválida (sem `responder_usuario`, argumentos fora do schema, número sem nenhuma ferramenta de dados,
+  `responder_usuario` junto com outras ferramentas) recebe uma correção; na segunda falha a API retorna 502.
+- Timeout/5xx do modelo principal troca para `LLM_FALLBACK_MODEL` até o fim da pergunta; sem modelo
+  disponível, 503. Chave ausente ou inválida também retorna 503, com mensagem de configuração.
+- Cada pergunta gera um log JSON `chat` com `trace_id`, modelo, tokens de entrada/saída, ferramentas e duração.
 
 ## Estrutura de pastas planejada
 

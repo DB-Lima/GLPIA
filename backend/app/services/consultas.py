@@ -48,6 +48,9 @@ class ServicoIndicadores:
         self._glpi = glpi
         self.cache = cache or CacheTTL()
 
+    def referencia(self) -> datetime:
+        return self._glpi.agora()
+
     def filtro_efetivo(self, filtro: FiltroChamados) -> FiltroChamados:
         """Preenche o período padrão (últimos 30 dias até a data de referência)."""
         fim = filtro.periodo_fim or self._glpi.agora().astimezone(FUSO).date()
