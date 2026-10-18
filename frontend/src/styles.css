@@ -1,0 +1,150 @@
+:root {
+  --fundo: #f4f6f8;
+  --superficie: #ffffff;
+  --borda: #dde2e7;
+  --texto: #1f2933;
+  --texto-suave: #5f6b77;
+  --acento: #0b7285;
+  --acento-texto: #ffffff;
+  --alerta: #c92a2a;
+  --alerta-fundo: #fff0f0;
+  --risco: #e67700;
+  --risco-fundo: #fff4e6;
+  --serie-1: #1971c2;
+  --serie-2: #0b7285;
+  --serie-3: #868e96;
+  --serie-4: #e67700;
+  --serie-5: #c92a2a;
+  --raio: 10px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fundo: #12161a;
+    --superficie: #1b2127;
+    --borda: #2f3943;
+    --texto: #e6eaee;
+    --texto-suave: #9aa5b1;
+    --acento: #3bc9db;
+    --acento-texto: #0b1a1e;
+    --alerta: #ff8787;
+    --alerta-fundo: #3a1d1d;
+    --risco: #ffa94d;
+    --risco-fundo: #3a2a14;
+    --serie-1: #4dabf7;
+    --serie-2: #3bc9db;
+    --serie-3: #adb5bd;
+    --serie-4: #ffa94d;
+    --serie-5: #ff8787;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+h1, h2 { margin: 0; }
+h1 { font-size: 22px; letter-spacing: 0.02em; }
+h2 { font-size: 15px; font-weight: 600; }
+
+select, input, button {
+  font: inherit;
+  color: var(--texto);
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 6px;
+  padding: 5px 8px;
+}
+
+button { cursor: pointer; }
+button:disabled { opacity: 0.5; cursor: default; }
+
+.app { max-width: 1600px; margin: 0 auto; padding: 16px 24px 32px; }
+
+.topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.subtitulo, .referencia { margin: 2px 0 0; color: var(--texto-suave); }
+
+.barra-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+}
+.campo { display: flex; flex-direction: column; gap: 4px; }
+.campo span { font-size: 12px; color: var(--texto-suave); }
+.campo select { min-width: 150px; max-width: 220px; }
+.botao-secundario { margin-left: auto; }
+
+.conteudo { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+.kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+}
+.kpi-alerta { border-color: var(--alerta); background: var(--alerta-fundo); }
+.kpi-rotulo, .kpi-detalhe { font-size: 12px; color: var(--texto-suave); }
+.kpi-valor { font-size: 26px; font-variant-numeric: tabular-nums; }
+
+.grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+
+.painel {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  min-width: 0;
+}
+.painel-cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px 0;
+}
+.painel-corpo { padding: 12px 16px 16px; }
+.atualizando { opacity: 0.55; transition: opacity 0.2s; }
+
+.estado { margin: 0; padding: 16px 0; color: var(--texto-suave); }
+.estado.erro { color: var(--alerta); }
+.nota { margin: 8px 0 0; font-size: 12px; color: var(--texto-suave); }
+
+.tabela-rolagem { max-height: 420px; overflow: auto; }
+.tabela { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.tabela th, .tabela td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--borda); }
+.tabela th { position: sticky; top: 0; background: var(--superficie); font-size: 12px; color: var(--texto-suave); }
+.selo { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.selo-vencido { color: var(--alerta); background: var(--alerta-fundo); }
+.selo-em_risco { color: var(--risco); background: var(--risco-fundo); }
+
+@media (max-width: 1400px) {
+  .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 1000px) {
+  .grade { grid-template-columns: minmax(0, 1fr); }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
