@@ -61,6 +61,7 @@ class MockGlpiAdapter:
     def __init__(self, caminho: Path):
         self._caminho = caminho
         self._chamados: list[Chamado] | None = None
+        self._referencia: datetime | None = None
 
     def _carregar(self) -> list[Chamado]:
         if self._chamados is None:
@@ -68,8 +69,14 @@ class MockGlpiAdapter:
                 raise FileNotFoundError(
                     f"Dataset mock não encontrado em {self._caminho}. Rode: python scripts/gerar_mock.py"
                 )
-            self._chamados = converter(json.loads(self._caminho.read_text(encoding="utf-8")))
+            dados = json.loads(self._caminho.read_text(encoding="utf-8"))
+            self._referencia = _data(dados["meta"]["referencia"])
+            self._chamados = converter(dados)
         return self._chamados
 
     async def listar_chamados(self, filtro: FiltroChamados) -> list[Chamado]:
         return filtrar(self._carregar(), filtro)
+
+    def agora(self) -> datetime:
+        self._carregar()
+        return self._referencia

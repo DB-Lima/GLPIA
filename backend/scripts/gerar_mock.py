@@ -57,6 +57,8 @@ PRIORIDADES = [(1, 0.05), (2, 0.15), (3, 0.50), (4, 0.20), (5, 0.08), (6, 0.02)]
 SLA_TTO_HORAS = {1: 8, 2: 8, 3: 4, 4: 2, 5: 1, 6: 0.5}
 SLA_TTR_HORAS = {1: 72, 2: 48, 3: 24, 4: 16, 5: 8, 6: 4}
 DIAS_ATE_FECHAR = 3
+# Abertura concentrada no horário comercial, com plantão à noite e de madrugada
+PESO_HORA = [1 if h < 8 else 10 if h < 18 else 3 if h < 22 else 1 for h in range(24)]
 
 
 def _escolher(rng: random.Random, pares):
@@ -73,7 +75,8 @@ def _data_abertura(rng: random.Random) -> datetime:
         dia = REFERENCIA.date() - timedelta(days=rng.randrange(JANELA_DIAS))
         if dia.weekday() >= 5 and rng.random() < 0.7:
             continue  # menos chamados no fim de semana
-        momento = datetime(dia.year, dia.month, dia.day, rng.randint(8, 17), rng.randrange(60), rng.randrange(60))
+        hora = rng.choices(range(24), weights=PESO_HORA, k=1)[0]
+        momento = datetime(dia.year, dia.month, dia.day, hora, rng.randrange(60), rng.randrange(60))
         if momento <= REFERENCIA:
             return momento
 
